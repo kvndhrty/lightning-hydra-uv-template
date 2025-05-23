@@ -207,13 +207,13 @@ When running `uv run src/train.py` (or `python src/train.py` if UV is not instal
 <summary><b>Override any config parameter from command line</b></summary>
 
 ```bash
-python train.py trainer.max_epochs=20 model.optimizer.lr=1e-4
+uv run train.py trainer.max_epochs=20 model.optimizer.lr=1e-4
 ```
 
 > **Note**: You can also add new parameters with `+` sign.
 
 ```bash
-python train.py +model.new_param="owo"
+uv run train.py +model.new_param="owo"
 ```
 
 </details>
@@ -223,25 +223,25 @@ python train.py +model.new_param="owo"
 
 ```bash
 # train on CPU
-python train.py trainer=cpu
+uv run train.py trainer=cpu
 
 # train on 1 GPU
-python train.py trainer=gpu
+uv run train.py trainer=gpu
 
 # train on TPU
-python train.py +trainer.tpu_cores=8
+uv run train.py +trainer.tpu_cores=8
 
 # train with DDP (Distributed Data Parallel) (4 GPUs)
-python train.py trainer=ddp trainer.devices=4
+uv run train.py trainer=ddp trainer.devices=4
 
 # train with DDP (Distributed Data Parallel) (8 GPUs, 2 nodes)
-python train.py trainer=ddp trainer.devices=4 trainer.num_nodes=2
+uv run train.py trainer=ddp trainer.devices=4 trainer.num_nodes=2
 
 # simulate DDP on CPU processes
-python train.py trainer=ddp_sim trainer.devices=2
+uv run train.py trainer=ddp_sim trainer.devices=2
 
 # accelerate training on mac
-python train.py trainer=mps
+uv run train.py trainer=mps
 ```
 
 > **Warning**: Currently there are problems with DDP mode, read [this issue](https://github.com/ashleve/lightning-hydra-template/issues/393) to learn more.
@@ -253,7 +253,7 @@ python train.py trainer=mps
 
 ```bash
 # train with pytorch native automatic mixed precision (AMP)
-python train.py trainer=gpu +trainer.precision=16
+uv run train.py trainer=gpu +trainer.precision=16
 ```
 
 </details>
@@ -263,7 +263,7 @@ python train.py trainer=gpu +trainer.precision=16
 <summary><b>Optimize large scale models on multiple GPUs with Deepspeed</b></summary>
 
 ```bash
-python train.py +trainer.
+uv run train.py +trainer.
 ```
 
 </details>
@@ -281,7 +281,7 @@ wandb:
 
 ```bash
 # train model with Weights&Biases (link to wandb dashboard should appear in the terminal)
-python train.py logger=wandb
+uv run train.py logger=wandb
 ```
 
 > **Note**: Lightning provides convenient integrations with most popular logging frameworks. Learn more [here](#experiment-tracking).
@@ -296,7 +296,7 @@ python train.py logger=wandb
 <summary><b>Train model with chosen experiment config</b></summary>
 
 ```bash
-python train.py experiment=example
+uv run train.py experiment=example
 ```
 
 > **Note**: Experiment configs are placed in [configs/experiment/](configs/experiment/).
@@ -307,7 +307,7 @@ python train.py experiment=example
 <summary><b>Attach some callbacks to run</b></summary>
 
 ```bash
-python train.py callbacks=default
+uv run train.py callbacks=default
 ```
 
 > **Note**: Callbacks can be used for things such as as model checkpointing, early stopping and [many more](https://pytorch-lightning.readthedocs.io/en/latest/extensions/callbacks.html#built-in-callbacks).
@@ -321,16 +321,16 @@ python train.py callbacks=default
 
 ```yaml
 # gradient clipping may be enabled to avoid exploding gradients
-python train.py +trainer.gradient_clip_val=0.5
+uv run train.py +trainer.gradient_clip_val=0.5
 
 # run validation loop 4 times during a training epoch
-python train.py +trainer.val_check_interval=0.25
+uv run train.py +trainer.val_check_interval=0.25
 
 # accumulate gradients
-python train.py +trainer.accumulate_grad_batches=10
+uv run train.py +trainer.accumulate_grad_batches=10
 
 # terminate training after 12 hours
-python train.py +trainer.max_time="00:12:00:00"
+uv run train.py +trainer.max_time="00:12:00:00"
 ```
 
 > **Note**: PyTorch Lightning provides about [40+ useful trainer flags](https://pytorch-lightning.readthedocs.io/en/latest/common/trainer.html#trainer-flags).
@@ -345,22 +345,22 @@ python train.py +trainer.max_time="00:12:00:00"
 # changes logging directory to `logs/debugs/...`
 # sets level of all command line loggers to 'DEBUG'
 # enforces debug-friendly configuration
-python train.py debug=default
+uv run train.py debug=default
 
 # run 1 train, val and test loop, using only 1 batch
-python train.py debug=fdr
+uv run train.py debug=fdr
 
 # print execution time profiling
-python train.py debug=profiler
+uv run train.py debug=profiler
 
 # try overfitting to 1 batch
-python train.py debug=overfit
+uv run train.py debug=overfit
 
 # raise exception if there are any numerical anomalies in tensors, like NaN or +/-inf
-python train.py +trainer.detect_anomaly=true
+uv run train.py +trainer.detect_anomaly=true
 
 # use only 20% of the data
-python train.py +trainer.limit_train_batches=0.2 \
+uv run train.py +trainer.limit_train_batches=0.2 \
 +trainer.limit_val_batches=0.2 +trainer.limit_test_batches=0.2
 ```
 
@@ -372,7 +372,7 @@ python train.py +trainer.limit_train_batches=0.2 \
 <summary><b>Resume training from checkpoint</b></summary>
 
 ```yaml
-python train.py ckpt_path="/path/to/ckpt/name.ckpt"
+uv run train.py ckpt_path="/path/to/ckpt/name.ckpt"
 ```
 
 > **Note**: Checkpoint can be either path or URL.
@@ -385,7 +385,7 @@ python train.py ckpt_path="/path/to/ckpt/name.ckpt"
 <summary><b>Evaluate checkpoint on test dataset</b></summary>
 
 ```yaml
-python eval.py ckpt_path="/path/to/ckpt/name.ckpt"
+uv run eval.py ckpt_path="/path/to/ckpt/name.ckpt"
 ```
 
 > **Note**: Checkpoint can be either path or URL.
@@ -398,7 +398,7 @@ python eval.py ckpt_path="/path/to/ckpt/name.ckpt"
 ```bash
 # this will run 6 experiments one after the other,
 # each with different combination of batch_size and learning rate
-python train.py -m data.batch_size=32,64,128 model.lr=0.001,0.0005
+uv run train.py -m data.batch_size=32,64,128 model.lr=0.001,0.0005
 ```
 
 > **Note**: Hydra composes configs lazily at job launch time. If you change code or configs after launching a job/sweep, the final composed configs might be impacted.
@@ -411,7 +411,7 @@ python train.py -m data.batch_size=32,64,128 model.lr=0.001,0.0005
 ```bash
 # this will run hyperparameter search defined in `configs/hparams_search/mnist_optuna.yaml`
 # over chosen experiment config
-python train.py -m hparams_search=mnist_optuna experiment=example
+uv run train.py -m hparams_search=mnist_optuna experiment=example
 ```
 
 > **Note**: Using [Optuna Sweeper](https://hydra.cc/docs/next/plugins/optuna_sweeper) doesn't require you to add any boilerplate to your code, everything is defined in a [single config file](configs/hparams_search/mnist_optuna.yaml).
@@ -424,7 +424,7 @@ python train.py -m hparams_search=mnist_optuna experiment=example
 <summary><b>Execute all experiments from folder</b></summary>
 
 ```bash
-python train.py -m 'experiment=glob(*)'
+uv run train.py -m 'experiment=glob(*)'
 ```
 
 > **Note**: Hydra provides special syntax for controlling behavior of multiruns. Learn more [here](https://hydra.cc/docs/next/tutorials/basic/running_your_app/multi-run). The command above executes all experiments from [configs/experiment/](configs/experiment/).
@@ -435,7 +435,7 @@ python train.py -m 'experiment=glob(*)'
 <summary><b>Execute run for multiple different seeds</b></summary>
 
 ```bash
-python train.py -m seed=1,2,3,4,5 trainer.deterministic=True logger=csv tags=["benchmark"]
+uv run train.py -m seed=1,2,3,4,5 trainer.deterministic=True logger=csv tags=["benchmark"]
 ```
 
 > **Note**: `trainer.deterministic=True` makes pytorch more deterministic but impacts the performance.
@@ -502,10 +502,10 @@ pytest -k "not slow"
 Each experiment should be tagged in order to easily filter them across files or in logger UI:
 
 ```bash
-python train.py tags=["mnist","experiment_X"]
+uv run train.py tags=["mnist","experiment_X"]
 ```
 
-> **Note**: You might need to escape the bracket characters in your shell with `python train.py tags=\["mnist","experiment_X"\]`.
+> **Note**: You might need to escape the bracket characters in your shell with `uv run train.py tags=\["mnist","experiment_X"\]`.
 
 If no tags are provided, you will be asked to input them from command line:
 
@@ -706,7 +706,7 @@ This allows you to easily iterate over new models! Every time you create a new o
 Switch between models and datamodules with command line arguments:
 
 ```bash
-python train.py model=mnist
+uv run train.py model=mnist
 ```
 
 Example pipeline managing the instantiation logic: [src/train.py](src/train.py).
@@ -746,7 +746,7 @@ defaults:
   # it's optional since it doesn't need to exist and is excluded from version control
   - optional local: default.yaml
 
-  # debugging config (enable through command line, e.g. `python train.py debug=default)
+  # debugging config (enable through command line, e.g. `uv run train.py debug=default)
   - debug: null
 
 # task name, determines output directory path
@@ -754,7 +754,7 @@ task_name: "train"
 
 # tags to help you identify your experiments
 # you can overwrite this in experiment configs
-# overwrite from command line with `python train.py tags="[first_tag, second_tag]"`
+# overwrite from command line with `uv run train.py tags="[first_tag, second_tag]"`
 # appending lists from command line is currently not supported :(
 # https://github.com/facebookresearch/hydra/issues/1547
 tags: ["dev"]
@@ -790,7 +790,7 @@ For example, you can use them to version control best hyperparameters for each c
 # @package _global_
 
 # to execute this experiment run:
-# python train.py experiment=example
+# uv run train.py experiment=example
 
 defaults:
   - override /data: mnist.yaml
@@ -840,7 +840,7 @@ logger:
 3. Write your experiment config, containing paths to model and datamodule
 4. Run training with chosen experiment config:
    ```bash
-   python src/train.py experiment=experiment_name.yaml
+   uv run src/train.py experiment=experiment_name.yaml
    ```
 
 **Experiment design**
@@ -850,7 +850,7 @@ _Say you want to execute many runs to plot how accuracy changes in respect to ba
 1. Execute the runs with some config parameter that allows you to identify them easily, like tags:
 
    ```bash
-   python train.py -m logger=csv data.batch_size=16,32,64,128 tags=["batch_size_exp"]
+   uv run train.py -m logger=csv data.batch_size=16,32,64,128 tags=["batch_size_exp"]
    ```
 
 2. Write a script or notebook that searches over the `logs/` folder and retrieves csv logs from runs containing given tags in config. Plot the results.
@@ -899,7 +899,7 @@ PyTorch Lightning supports many popular logging frameworks: [Weights&Biases](htt
 These tools help you keep track of hyperparameters and output metrics and allow you to compare and visualize results. To use one of them simply complete its configuration in [configs/logger](configs/logger) and run:
 
 ```bash
-python train.py logger=logger_name
+uv run train.py logger=logger_name
 ```
 
 You can use many of them at once (see [configs/logger/many_loggers.yaml](configs/logger/many_loggers.yaml) for example).
@@ -986,7 +986,7 @@ hydra:
 
 </details>
 
-Next, execute it with: `python train.py -m hparams_search=mnist_optuna`
+Next, execute it with: `uv run train.py -m hparams_search=mnist_optuna`
 
 Using this approach doesn't require adding any boilerplate to code, everything is defined in a single config file. The only necessary thing is to return the optimized metric value from the launch file.
 
@@ -1015,7 +1015,7 @@ Lightning supports multiple ways of doing distributed training. The most common 
 You can run DDP on mnist example with 4 GPUs like this:
 
 ```bash
-python train.py trainer=ddp
+uv run train.py trainer=ddp
 ```
 
 > **Note**: When using DDP you have to be careful how you write your models - read the [docs](https://lightning.ai/docs/pytorch/latest/advanced/speed.html).
@@ -1091,28 +1091,6 @@ uv pip install torch lightning hydra-core
 
 </details>
 
-<details>
-<summary><b>Alternative: Use Miniconda</b></summary>
-
-While UV is recommended for most use cases, conda can still be useful for managing complex system dependencies or when you need pre-compiled binaries for specific hardware.
-
-Big advantage of conda is that it allows for installing packages without requiring certain compilers or libraries to be available in the system (since it installs precompiled binaries), so it often makes it easier to install some dependencies e.g. cudatoolkit for GPU support.
-
-Example installation:
-
-```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh
-```
-
-Create new conda environment:
-
-```bash
-conda create -n myenv python=3.10
-conda activate myenv
-```
-
-</details>
 
 <details>
 <summary><b>Use automatic code formatting</b></summary>
@@ -1492,20 +1470,20 @@ Train model with default configuration
 
 ```bash
 # train on CPU
-python src/train.py trainer=cpu
+uv run src/train.py trainer=cpu
 
 # train on GPU
-python src/train.py trainer=gpu
+uv run src/train.py trainer=gpu
 ```
 
 Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)
 
 ```bash
-python src/train.py experiment=experiment_name.yaml
+uv run src/train.py experiment=experiment_name.yaml
 ```
 
 You can override any parameter from command line like this
 
 ```bash
-python src/train.py trainer.max_epochs=20 data.batch_size=64
+uv run src/train.py trainer.max_epochs=20 data.batch_size=64
 ```
