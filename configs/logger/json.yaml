@@ -1,0 +1,19 @@
+# @package _global_
+
+# JSON logger using custom callback
+# This creates structured JSON logs that can be parsed by CLI tools
+
+defaults:
+  - csv.yaml  # Include CSV logger as base
+
+callbacks:
+  metrics_logger:
+    _target_: src.utils.logging_callbacks.MetricsLogger
+    save_json: true
+    save_csv: true
+    log_grad_norm: true
+    log_lr: true
+    log_epoch_time: true
+  
+  checkpoint_metrics:
+    _target_: src.utils.logging_callbacks.CheckpointMetricsLogger
