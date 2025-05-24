@@ -10,12 +10,13 @@ def test_pyproject_toml_exists():
     """Test that pyproject.toml exists and is valid."""
     pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
     assert pyproject_path.exists(), "pyproject.toml not found"
-    
+
     # Check it's parseable
     import tomllib
+
     with open(pyproject_path, "rb") as f:
         data = tomllib.load(f)
-    
+
     # Check required sections
     assert "project" in data
     assert "dependencies" in data["project"]
@@ -32,14 +33,16 @@ def test_no_setup_py():
 def test_no_requirements_txt():
     """Test that requirements.txt has been removed."""
     requirements_path = Path(__file__).parent.parent / "requirements.txt"
-    assert not requirements_path.exists(), "requirements.txt should be removed when using pyproject.toml"
+    assert (
+        not requirements_path.exists()
+    ), "requirements.txt should be removed when using pyproject.toml"
 
 
 def test_makefile_uses_uv():
     """Test that Makefile commands use UV."""
     makefile_path = Path(__file__).parent.parent / "Makefile"
     assert makefile_path.exists(), "Makefile not found"
-    
+
     content = makefile_path.read_text()
     assert "uv run pytest" in content, "Makefile should use 'uv run' for tests"
     assert "uv run python" in content, "Makefile should use 'uv run' for python commands"
@@ -49,11 +52,12 @@ def test_makefile_uses_uv():
 def test_console_scripts_defined():
     """Test that console scripts are properly defined in pyproject.toml."""
     pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
-    
+
     import tomllib
+
     with open(pyproject_path, "rb") as f:
         data = tomllib.load(f)
-    
+
     assert "scripts" in data["project"]
     assert "lht-train" in data["project"]["scripts"]
     assert "lht-eval" in data["project"]["scripts"]
@@ -68,13 +72,14 @@ def test_python_version_requirement():
 def test_uv_config_in_pyproject():
     """Test UV-specific configuration in pyproject.toml."""
     pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
-    
+
     import tomllib
+
     with open(pyproject_path, "rb") as f:
         data = tomllib.load(f)
-    
+
     assert "uv" in data["tool"], "UV configuration section missing"
     assert "dev-dependencies" in data["tool"]["uv"]
-    
+
     # Also check ruff is configured (modern linter to replace flake8/black/isort)
     assert "ruff" in data["tool"], "Ruff configuration missing"

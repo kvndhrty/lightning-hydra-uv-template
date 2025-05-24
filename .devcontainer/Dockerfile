@@ -1,8 +1,12 @@
 # Use NVIDIA PyTorch base image with CUDA support
-FROM nvcr.io/nvidia/pytorch:24.01-py3
+FROM mcr.microsoft.com/devcontainers/python:dev-3.12-bookworm
 
 # Set working directory
 WORKDIR /workspace
+
+RUN pip install pipx
+RUN pipx ensurepath
+RUN pipx install uv
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -14,22 +18,6 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Install UV package manager
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.cargo/bin:$PATH"
-
-# Copy project files
-COPY pyproject.toml README.md ./
-COPY src ./src
-COPY configs ./configs
-COPY data ./data
-COPY scripts ./scripts
-COPY tests ./tests
-
-# Create virtual environment and install dependencies
-RUN uv venv && \
-    . .venv/bin/activate && \
-    uv pip install -e ".[all]"
 
 # Set environment to use the virtual environment
 ENV PATH="/workspace/.venv/bin:$PATH"
@@ -39,4 +27,4 @@ ENV VIRTUAL_ENV="/workspace/.venv"
 EXPOSE 8888 6006
 
 # Set default command
-CMD ["/bin/bash"]
+CMD ["/bin/zsh"]

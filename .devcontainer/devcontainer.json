@@ -1,11 +1,11 @@
 {
     "name": "Lightning-Hydra-Template",
     "build": {
-        "dockerfile": "../Dockerfile",
+        "dockerfile": "./Dockerfile",
         "context": "..",
         "args": {}
     },
-    
+
     // Features to add to the dev container
     "features": {
         "ghcr.io/devcontainers/features/common-utils:2": {
@@ -57,13 +57,6 @@
                 "GitHub.copilot-chat",
                 "eamodio.gitlens",
                 "ms-azuretools.vscode-docker",
-                "streetsidesoftware.code-spell-checker",
-                "usernamehw.errorlens",
-                "Gruntfuggly.todo-tree",
-                "yzhang.markdown-all-in-one",
-                "DavidAnson.vscode-markdownlint",
-                "redhat.vscode-yaml",
-                "tamasfe.even-better-toml"
             ]
         }
     },
@@ -72,7 +65,7 @@
     "forwardPorts": [8888, 6006],
 
     // Use 'postCreateCommand' to run commands after the container is created
-    "postCreateCommand": "uv pip install -e '.[all]' && pre-commit install",
+    "postStartCommand": "uv sync && pre-commit install",
 
     // Set environment variables
     "containerEnv": {
@@ -81,16 +74,19 @@
 
     // Mount local folders or files
     "mounts": [
-        "source=${localWorkspaceFolder}/.cache,target=/home/vscode/.cache,type=bind,consistency=cached"
+        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached",
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
     ],
 
     // GPU support
-    "runArgs": [
-        "--gpus=all",
-        "--ipc=host",
-        "--ulimit=memlock=-1",
-        "--ulimit=stack=67108864"
-    ],
+    // Uncomment this section to enable GPU support
+    // "runArgs": [
+    //     "--gpus=all",
+    //     "--ipc=host",
+    //     "--ulimit=memlock=-1",
+    //     "--ulimit=stack=67108864"
+    // ],
 
     // Run as non-root user
     "remoteUser": "vscode"

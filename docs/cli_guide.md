@@ -33,7 +33,7 @@ lht ckpt list --limit 20
 
 Output example:
 ```
-                    Available Checkpoints (showing up to 10)                    
+                    Available Checkpoints (showing up to 10)
 ┏━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
 ┃ #   ┃ Checkpoint                         ┃ Epoch ┃ Created          ┃ Config ┃
 ┡━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━┩

@@ -39,32 +39,4 @@ train: ## Train the model
 	uv run python src/train.py
 
 eval: ## Evaluate the model
-	uv run python src/eval.py
-
-# Docker commands
-docker-build: ## Build Docker image (use make docker-build-gpu or docker-build-dev)
-	./scripts/docker_build.sh gpu
-
-docker-build-gpu: ## Build GPU-enabled Docker image
-	./scripts/docker_build.sh gpu
-
-docker-build-dev: ## Build lightweight development Docker image
-	./scripts/docker_build.sh dev
-
-docker-build-all: ## Build all Docker images
-	./scripts/docker_build.sh all
-
-docker-run: ## Run Docker container with GPU support
-	./scripts/docker_run.sh --gpu
-
-docker-run-cpu: ## Run Docker container (CPU only)
-	./scripts/docker_run.sh --cpu
-
-docker-compose-up: ## Start services with docker-compose
-	docker-compose up -d
-
-docker-compose-down: ## Stop services with docker-compose
-	docker-compose down
-
-docker-compose-logs: ## Show logs from docker-compose services
-	docker-compose logs -f
+	uv run src/eval.py

@@ -14,7 +14,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 # Or with pip
-pip install uv
+pip install pipx
+pipx install uv
 ```
 
 ### Setup Project
@@ -25,7 +26,7 @@ git clone https://github.com/ashleve/lightning-hydra-template
 cd lightning-hydra-template
 
 # Create a virtual environment with Python 3.9+
-uv venv --python 3.9
+uv sync
 
 # Activate the virtual environment
 # On macOS/Linux:

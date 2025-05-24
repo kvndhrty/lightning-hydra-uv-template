@@ -6,10 +6,10 @@ from rich.console import Console
 
 class DebugCLI:
     """Debug command CLI."""
-    
+
     def __init__(self):
         self.console = Console()
-    
+
     def add_subparser(self, subparsers):
         """Add debug subcommands to the parser."""
         debug_parser = subparsers.add_parser(
@@ -21,7 +21,7 @@ class DebugCLI:
             action="store_true",
             help="Debug on CPU with single batch",
         )
-    
+
     def execute(self, args):
         """Execute debug command."""
         self.console.print("[yellow]Debug commands coming soon![/yellow]")

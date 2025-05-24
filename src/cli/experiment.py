@@ -6,10 +6,10 @@ from rich.console import Console
 
 class ExperimentCLI:
     """Experiment management CLI."""
-    
+
     def __init__(self):
         self.console = Console()
-    
+
     def add_subparser(self, subparsers):
         """Add experiment subcommands to the parser."""
         exp_parser = subparsers.add_parser(
@@ -21,7 +21,7 @@ class ExperimentCLI:
             action="store_true",
             help="List recent experiments",
         )
-    
+
     def execute(self, args):
         """Execute experiment command."""
         self.console.print("[yellow]Experiment commands coming soon![/yellow]")

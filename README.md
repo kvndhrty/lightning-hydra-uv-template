@@ -182,7 +182,7 @@ cd lightning-hydra-template
 # create virtual environment
 python -m venv .venv
 
-# activate environment  
+# activate environment
 # On Linux/macOS:
 source .venv/bin/activate
 # On Windows:

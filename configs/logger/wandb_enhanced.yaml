@@ -11,7 +11,7 @@ callbacks:
     log_model_architecture: true
     log_best_model: true
     watch_model: true
-  
+
   # Local metrics logging for CLI tools
   metrics_logger:
     _target_: src.utils.logging_callbacks.MetricsLogger
@@ -20,6 +20,6 @@ callbacks:
     log_grad_norm: true
     log_lr: true
     log_epoch_time: true
-  
+
   checkpoint_metrics:
     _target_: src.utils.logging_callbacks.CheckpointMetricsLogger
