@@ -16,11 +16,10 @@ clean-logs: ## Clean logs
 	rm -rf logs/**
 
 install: ## Install the package in production mode
-	uv pip sync pyproject.toml
+	uv sync
 
 install-dev: ## Install the package in development mode with all extras
-	uv pip install -e ".[all]"
-	uv pip install -r pyproject.toml --extra dev
+	uv sync --all-packages
 
 format: ## Run pre-commit hooks
 	pre-commit run -a
@@ -36,7 +35,7 @@ test-full: ## Run all tests
 	uv run pytest
 
 train: ## Train the model
-	uv run python src/train.py
+	uv run src/train.py
 
 eval: ## Evaluate the model
 	uv run src/eval.py
