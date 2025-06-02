@@ -1,14 +1,13 @@
 """Experiment management CLI commands (placeholder)."""
-import sys
 
-from rich.console import Console
+from src.cli.base import BaseCLI
 
 
-class ExperimentCLI:
+class ExperimentCLI(BaseCLI):
     """Experiment management CLI."""
 
     def __init__(self):
-        self.console = Console()
+        super().__init__()
 
     def add_subparser(self, subparsers):
         """Add experiment subcommands to the parser."""
@@ -24,7 +23,7 @@ class ExperimentCLI:
 
     def execute(self, args):
         """Execute experiment command."""
-        self.console.print("[yellow]Experiment commands coming soon![/yellow]")
+        self.warning_message("Experiment commands coming soon!")
         self.console.print("This will include:")
         self.console.print("  - List recent experiments with metrics")
         self.console.print("  - Compare configs between runs")

@@ -1,14 +1,13 @@
 """Debug CLI commands (placeholder)."""
-import sys
 
-from rich.console import Console
+from src.cli.base import BaseCLI
 
 
-class DebugCLI:
+class DebugCLI(BaseCLI):
     """Debug command CLI."""
 
     def __init__(self):
-        self.console = Console()
+        super().__init__()
 
     def add_subparser(self, subparsers):
         """Add debug subcommands to the parser."""
@@ -24,7 +23,7 @@ class DebugCLI:
 
     def execute(self, args):
         """Execute debug command."""
-        self.console.print("[yellow]Debug commands coming soon![/yellow]")
+        self.warning_message("Debug commands coming soon!")
         self.console.print("This will include:")
         self.console.print("  - Single batch CPU debugging")
         self.console.print("  - VS Code launch.json generation")

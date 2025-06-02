@@ -48,3 +48,16 @@ class RankedLogger(logging.LoggerAdapter):
             else:
                 if rank is None or current_rank == rank:
                     self.logger.log(level, msg, *args, **kwargs)
+
+
+def get_ranked_logger(name: str, rank_zero_only: bool = True) -> RankedLogger:
+    """Factory function for creating ranked loggers.
+
+    Args:
+        name: Name of the logger.
+        rank_zero_only: Whether to log only on rank zero.
+
+    Returns:
+        Configured RankedLogger instance.
+    """
+    return RankedLogger(name, rank_zero_only=rank_zero_only)

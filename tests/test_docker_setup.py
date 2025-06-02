@@ -119,7 +119,6 @@ def test_docker_scripts():
 
     # Check if executable (Unix only)
     import os
-    import stat
 
     if os.name != "nt":  # Not Windows
         assert os.access(docker_build, os.X_OK), "docker_build.sh should be executable"

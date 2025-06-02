@@ -5,10 +5,16 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-import pandas as pd
 import torch
 from lightning import Callback, LightningModule, Trainer
 from omegaconf import OmegaConf
+
+from src.utils.file_utils import ensure_directory, safe_save_csv, safe_save_json
+from src.utils.metrics_utils import (
+    compute_gradient_norms,
+    extract_callback_metrics,
+    get_learning_rates,
+)
 
 
 class MetricsLogger(Callback):
@@ -52,7 +58,7 @@ class MetricsLogger(Callback):
             self.save_dir = Path(trainer.log_dir) / "metrics"
         else:
             self.save_dir = Path(self.save_dir)
-        self.save_dir.mkdir(parents=True, exist_ok=True)
+        ensure_directory(self.save_dir)
 
         # Save initial config if available
         config_path = self.save_dir / "config.yaml"
@@ -76,23 +82,21 @@ class MetricsLogger(Callback):
         if self.log_epoch_time and self.epoch_start_time is not None:
             metrics["epoch_time"] = time.time() - self.epoch_start_time
 
-        # Add all logged metrics
-        for key, value in trainer.callback_metrics.items():
-            if isinstance(value, torch.Tensor):
-                metrics[key] = value.item()
-            else:
-                metrics[key] = value
+        # Add all logged metrics using utility function
+        callback_metrics = extract_callback_metrics(trainer.callback_metrics)
+        metrics.update(callback_metrics)
 
-        # Add learning rates
+        # Add learning rates using utility function
         if self.log_lr:
-            for i, optimizer in enumerate(trainer.optimizers):
-                for j, param_group in enumerate(optimizer.param_groups):
-                    metrics[f"lr/optimizer_{i}_group_{j}"] = param_group["lr"]
+            lr_dict = get_learning_rates(trainer.optimizers)
+            for key, value in lr_dict.items():
+                metrics[f"lr/{key}"] = value
 
-        # Add gradient norms
+        # Add gradient norms using utility function
         if self.log_grad_norm:
-            grad_norm_dict = self._compute_grad_norm(pl_module)
-            metrics.update(grad_norm_dict)
+            grad_norms = compute_gradient_norms(pl_module, per_layer=True)
+            for key, value in grad_norms.items():
+                metrics[f"grad_norm/{key}"] = value
 
         # Store metrics
         self.metrics_history.append(metrics)
@@ -108,58 +112,38 @@ class MetricsLogger(Callback):
             "stage": "test",
         }
 
-        # Add test metrics
-        for key, value in trainer.callback_metrics.items():
+        # Add test metrics using utility function
+        callback_metrics = extract_callback_metrics(trainer.callback_metrics)
+        for key, value in callback_metrics.items():
             if "test" in key:
-                if isinstance(value, torch.Tensor):
-                    test_metrics[key] = value.item()
-                else:
-                    test_metrics[key] = value
+                test_metrics[key] = value
 
-        # Save test results separately
+        # Save test results separately using utility functions
         if self.save_json:
             test_path = self.save_dir / "test_results.json"
-            with open(test_path, "w") as f:
-                json.dump(test_metrics, f, indent=2)
+            safe_save_json(test_metrics, test_path)
 
         if self.save_csv:
             test_path = self.save_dir / "test_results.csv"
-            pd.DataFrame([test_metrics]).to_csv(test_path, index=False)
+            import pandas as pd
 
-    def _compute_grad_norm(self, pl_module: LightningModule) -> dict[str, float]:
-        """Compute gradient norms for different parameter groups."""
-        grad_norms = {}
-
-        # Total gradient norm
-        total_norm = 0.0
-        for p in pl_module.parameters():
-            if p.grad is not None:
-                param_norm = p.grad.data.norm(2)
-                total_norm += param_norm.item() ** 2
-        total_norm = total_norm**0.5
-        grad_norms["grad_norm/total"] = total_norm
-
-        # Per-layer gradient norms (optional, for debugging)
-        for name, param in pl_module.named_parameters():
-            if param.grad is not None:
-                grad_norms[f"grad_norm/{name}"] = param.grad.data.norm(2).item()
-
-        return grad_norms
+            safe_save_csv(pd.DataFrame([test_metrics]), test_path)
 
     def _save_metrics(self) -> None:
-        """Save metrics to JSON and CSV files."""
+        """Save metrics to JSON and CSV files using utility functions."""
         if not self.metrics_history:
             return
 
         if self.save_json:
             json_path = self.save_dir / "metrics.json"
-            with open(json_path, "w") as f:
-                json.dump(self.metrics_history, f, indent=2)
+            safe_save_json(self.metrics_history, json_path)
 
         if self.save_csv:
             csv_path = self.save_dir / "metrics.csv"
+            import pandas as pd
+
             df = pd.DataFrame(self.metrics_history)
-            df.to_csv(csv_path, index=False)
+            safe_save_csv(df, csv_path)
 
 
 class CheckpointMetricsLogger(Callback):

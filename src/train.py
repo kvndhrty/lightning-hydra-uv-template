@@ -3,7 +3,6 @@ from typing import Any, Optional
 import hydra
 import lightning as l
 import rootutils
-import torch
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig

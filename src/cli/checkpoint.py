@@ -1,27 +1,25 @@
 """Checkpoint management CLI commands."""
 import subprocess
-import sys
 from pathlib import Path
 from typing import Optional
 
-from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
 from rich.table import Table
 
+from src.cli.base import BaseCLI
 from src.utils.checkpoint_utils import (
     CheckpointInfo,
     get_best_checkpoint,
-    get_latest_checkpoint,
     get_resume_command,
     scan_checkpoints,
 )
 
 
-class CheckpointCLI:
+class CheckpointCLI(BaseCLI):
     """Checkpoint management CLI."""
 
     def __init__(self):
-        self.console = Console()
+        super().__init__()
 
     def add_subparser(self, subparsers):
         """Add checkpoint subcommands to the parser."""
@@ -97,21 +95,16 @@ class CheckpointCLI:
         elif args.ckpt_command == "resume":
             self.resume_checkpoint(args)
         else:
-            self.console.print("[red]Please specify a checkpoint command: list, resume[/red]")
-            sys.exit(1)
+            self.error_exit("Please specify a checkpoint command: list, resume")
 
     def list_checkpoints(self, args):
         """List available checkpoints."""
-        if not args.logs_dir.exists():
-            self.console.print(f"[red]Logs directory not found: {args.logs_dir}[/red]")
-            sys.exit(1)
+        self.validate_directory(args.logs_dir, "Logs directory")
 
         checkpoints = scan_checkpoints(args.logs_dir, args.task)
 
         if not checkpoints:
-            self.console.print(
-                f"[yellow]No checkpoints found in {args.logs_dir}/{args.task}[/yellow]"
-            )
+            self.warning_message(f"No checkpoints found in {args.logs_dir}/{args.task}")
             return
 
         # Create table
@@ -158,16 +151,13 @@ class CheckpointCLI:
 
     def resume_checkpoint(self, args):
         """Resume training from a checkpoint."""
-        if not args.logs_dir.exists():
-            self.console.print(f"[red]Logs directory not found: {args.logs_dir}[/red]")
-            sys.exit(1)
+        self.validate_directory(args.logs_dir, "Logs directory")
 
         # Get checkpoint
         if args.best:
             checkpoint = get_best_checkpoint(args.logs_dir, args.task)
             if not checkpoint:
-                self.console.print("[red]No best checkpoint found[/red]")
-                sys.exit(1)
+                self.error_exit("No best checkpoint found")
         else:
             # Show selection menu
             checkpoint = self._select_checkpoint(args.logs_dir, args.task)
@@ -176,11 +166,10 @@ class CheckpointCLI:
 
         # Check if config exists
         if not checkpoint.has_config:
-            self.console.print(
-                f"[red]No config found for checkpoint: {checkpoint.name}[/red]\n"
-                f"[yellow]Config should be at: {checkpoint.config_path}[/yellow]"
+            self.error_exit(
+                f"No config found for checkpoint: {checkpoint.name}\n"
+                f"Config should be at: {checkpoint.config_path}"
             )
-            sys.exit(1)
 
         # Generate resume command
         executable, cmd_args = get_resume_command(checkpoint, additional_overrides=args.overrides)
@@ -191,23 +180,24 @@ class CheckpointCLI:
         self.console.print(f"[cyan]{full_command}[/cyan]")
 
         if args.dry_run:
-            self.console.print("\n[yellow]Dry run mode - command not executed[/yellow]")
+            self.warning_message("\nDry run mode - command not executed")
             return
 
         # Confirm execution
         if Prompt.ask("\nExecute this command?", choices=["y", "n"], default="y") != "y":
-            self.console.print("[yellow]Cancelled[/yellow]")
+            self.warning_message("Cancelled")
             return
 
         # Execute command
-        self.console.print("\n[green]Starting training...[/green]\n")
+        self.success_message("\nStarting training...\n")
         try:
             subprocess.run([executable] + cmd_args, check=True)
         except subprocess.CalledProcessError as e:
-            self.console.print(f"[red]Training failed with exit code {e.returncode}[/red]")
-            sys.exit(e.returncode)
+            self.error_exit(f"Training failed with exit code {e.returncode}", e.returncode)
         except KeyboardInterrupt:
-            self.console.print("\n[yellow]Training interrupted[/yellow]")
+            self.warning_message("\nTraining interrupted")
+            import sys
+
             sys.exit(130)
 
     def _select_checkpoint(self, logs_dir: Path, task: str) -> Optional[CheckpointInfo]:
@@ -215,7 +205,7 @@ class CheckpointCLI:
         checkpoints = scan_checkpoints(logs_dir, task)
 
         if not checkpoints:
-            self.console.print(f"[yellow]No checkpoints found in {logs_dir}/{task}[/yellow]")
+            self.warning_message(f"No checkpoints found in {logs_dir}/{task}")
             return None
 
         # Show recent checkpoints
@@ -256,8 +246,7 @@ class CheckpointCLI:
         if 1 <= choice <= len(display_checkpoints):
             return display_checkpoints[choice - 1]
         else:
-            self.console.print("[red]Invalid selection[/red]")
-            return None
+            self.error_exit("Invalid selection")
 
 
 # Create singleton instance

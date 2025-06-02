@@ -105,3 +105,27 @@ def cfg_eval(cfg_eval_global: DictConfig, tmp_path: Path) -> DictConfig:
     yield cfg
 
     GlobalHydra.instance().clear()
+
+
+@pytest.fixture
+def mock_trainer_config():
+    """Create a standard mock trainer configuration for tests."""
+    return {
+        "fast_dev_run": True,
+        "accelerator": "cpu",
+        "devices": 1,
+        "logger": False,
+        "enable_checkpointing": False,
+        "max_epochs": 1,
+        "limit_train_batches": 0.01,
+        "limit_val_batches": 0.1,
+        "limit_test_batches": 0.1,
+    }
+
+
+@pytest.fixture
+def test_run_structure(tmp_path):
+    """Create a standard test run directory structure."""
+    from tests.utils import create_mock_run_structure
+
+    return create_mock_run_structure(tmp_path)

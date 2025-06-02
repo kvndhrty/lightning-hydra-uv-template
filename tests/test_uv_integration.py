@@ -1,5 +1,4 @@
 """Test UV package management integration."""
-import subprocess
 import sys
 from pathlib import Path
 
